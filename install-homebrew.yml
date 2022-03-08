@@ -1,0 +1,7 @@
+- hosts: lab
+  vars:
+    ansible_ssh_port: 2200
+    curl_state_pkg_latest: latest
+    update_pkg_manager: yes
+  roles:
+    - role: homebrew

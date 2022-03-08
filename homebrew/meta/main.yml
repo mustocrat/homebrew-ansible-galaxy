@@ -1,0 +1,8 @@
+galaxy_info:
+  author: Mustafa Saadi (0p0inter)
+  description: Ansible role to install homebrew on Ubuntu 20.x
+  company: Stellar Labs
+  license: MIT
+  min_ansible_version: 2.1
+  galaxy_tags: []
+dependencies: []

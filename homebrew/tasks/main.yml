@@ -1,0 +1,79 @@
+---
+# tasks file for homebrew
+- name: Specify custom ssh port
+  set_fact:
+    ansible_port: "{{ ansible_ssh_port }}"
+
+
+- name: Install cURL and dependencies on ubuntu
+  become: yes
+  apt:
+    name: curl
+    state: "{{ 'latest' if curl_state_pkg_latest else 'present' }}"
+    update_cache: "{{ update_pkg_manager }}"
+
+
+- name: Execute the homebrew install.sh script (with pipe to confirm the installation)
+  become: yes
+  shell:
+    echo "" | /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+
+- name: Make bashrc.d directory on home user
+  file:
+    path: ~/.bashrc.d
+    state: directory
+
+
+- name: Male bashrc file for homebrew
+  file:
+    path: "~/.bashrc.d/homebrew.bashrc"
+    state: touch
+
+
+- name: Append for loop bashrc file discovery
+  lineinfile:
+    path: ~/.bashrc
+    line: 'for file in ~/.bashrc.d/*.bashrc; do source "$file"; done'
+    insertbefore: BOF
+
+
+- name: Append homebrew path initialization
+  lineinfile:
+    path: ~/.bashrc.d/homebrew.bashrc
+    line: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"'
+    insertbefore: BOF
+
+
+- name: Set execute permissions on homebrew.bashrc file
+  file:
+    dest: ~/.bashrc.d/homebrew.bashrc
+    mode: +x
+
+
+- name: Source homebrew file
+  shell:
+    source ~/.bashrc
+  args:
+     executable: /bin/bash
+
+
+- name: Change homebrew permissions to user
+  become: yes
+  shell:
+    sudo chown -R test:root /home/linuxbrew/.linuxbrew/*
+
+
+- name: Install Pyenv package using homebrew
+  homebrew:
+    name: pyenv
+    state: present
+    update_homebrew: yes
+
+
+- name: Remove the homebrew install.sh script
+  file: 
+    path: "{{ lookup('env', 'PWD') }}/install.sh"
+    state: absent
+
+

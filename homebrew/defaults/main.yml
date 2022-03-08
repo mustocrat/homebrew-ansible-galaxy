@@ -1,0 +1,6 @@
+---
+# defaults file for homebrew
+ansible_ssh_port: 22
+curl_state_pkg_latest: no
+update_pkg_manager: no
+...
